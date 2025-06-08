@@ -24,36 +24,36 @@ st.set_page_config(
 # Fun messages for each grade
 grade_messages = {
     'A': [
-    "🌟 Wow, you're a total genius! With this score, you could be a lecturer! 😎",
-    "🚀 Incredible! Your grade makes NASA want to recruit you! 🛸",
-    "👑 Academic royalty! Your brain is razor-sharp! 💎",
-    "🔥 Your achievement is on fire! Even the AC can't keep up! ❄️",
-    "⭐ Five-star! The Michelin Guide wants to give you an academic award! 🏆",
-    "🎯 Perfect shot! The academic cupid hit the bullseye! 💘"
+    "Wow, you're a total genius! With this score, you could be a lecturer!",
+    "Incredible! Your grade makes NASA want to recruit you!",
+    "Academic royalty! Your brain is razor-sharp!",
+    "Your achievement is on fire! Even the AC can't keep up!",
+    "Five-star! The Michelin Guide wants to give you an academic award!",
+    "Perfect shot! The academic cupid hit the bullseye!"
     ],
     'B': [
-        "👍 Great job! You've reached the hardworking student level! 📚",
-        "💪 Solid! Your score is like a wall—strong and sturdy! 🧱",
-        "🎯 Good job! You hit your target nicely! 🏹",
-        "🌈 Colorful! Your achievement shines like a rainbow! 🎨",
-        "🚗 Cruise control! Smooth and steady—awesome! 🛣️",
-        "🍎 Apple of my eye! Your teacher must be super proud! 🍏"
+        "Great job! You've reached the hardworking student level!",
+        "Solid! Your score is like a wall—strong and sturdy!",
+        "Good job! You hit your target nicely!",
+        "Colorful! Your achievement shines like a rainbow!",
+        "Cruise control! Smooth and steady—awesome!",
+        "Apple of my eye! Your teacher must be super proud!"
     ],
     'C': [
-        "😊 Not bad! Still room to become an academic superhero! 🦸‍♂️",
-        "🌱 Like a plant, you're still growing and evolving! 🌿",
-        "🎢 Ups and downs are normal—what matters is moving forward! 🚂",
-        "🍕 Like pizza—still great even if not perfect! 🧀",
-        "🐢 Slow but sure! Even a turtle can win the race! 🏁",
-        "🌅 A sunrise moment! Tomorrow will be brighter! ☀️"
+        "Not bad! Still room to become an academic superhero!",
+        "Like a plant, you're still growing and evolving!",
+        "Ups and downs are normal—what matters is moving forward!",
+        "Like pizza—still great even if not perfect!",
+        "Slow but sure! Even a turtle can win the race!",
+        "A sunrise moment! Tomorrow will be brighter!"
     ],
     'D': [
-        "💪 Don’t give up! Even Batman fell before he flew! 🦇",
-        "🌅 This is just the sunrise—still a full day of chances ahead! ☀️",
-        "🚧 Under construction! Improvements in progress! 🔨",
-        "🎪 Life’s a circus—sometimes you're the clown, sometimes the star! 🤹‍♂️",
-        "🍀 Bad luck today? Good luck tomorrow! Keep fighting! 💪",
-        "🔋 Battery low? Time to recharge and come back stronger! ⚡"
+        "Don’t give up! Even Batman fell before he flew!",
+        "This is just the sunrise—still a full day of chances ahead!",
+        "Under construction! Improvements in progress!",
+        "Life’s a circus—sometimes you're the clown, sometimes the star!",
+        "Bad luck today? Good luck tomorrow! Keep fighting!",
+        "Battery low? Time to recharge and come back stronger!"
     ]
 }
 
@@ -109,7 +109,7 @@ def load_and_process_data():
 def train_model():
     df = load_and_process_data()
     
-    # Define features as in original code
+    # Define features
     numerical_features = ['Hours_Studied', 'Attendance', 'Sleep_Hours', 'Previous_Scores',
                          'Tutoring_Sessions', 'Physical_Activity']
 
@@ -394,7 +394,7 @@ def main():
             
             # Display fun message
             fun_message = random.choice(grade_messages[grade])
-            st.markdown(f"### 🎉 {fun_message}")
+            st.markdown(f"###{fun_message}")
             
             # Calculate prediction probabilities for each grade
             grade_probs = {
