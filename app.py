@@ -394,7 +394,7 @@ def main():
             
             # Display fun message
             fun_message = random.choice(grade_messages[grade])
-            st.markdown(f"###{fun_message}")
+            st.markdown(f"### Message: {fun_message}")
             
             # Calculate prediction probabilities for each grade
             grade_probs = {
