@@ -24,36 +24,36 @@ st.set_page_config(
 # Fun messages for each grade
 grade_messages = {
     'A': [
-        "🌟 Wah, kamu jenius banget! Nilai segini mah bisa jadi dosen! 😎",
-        "🚀 Mantap jiwa! Nilaimu bikin NASA pengen rekrut kamu! 🛸",
-        "👑 Raja/Ratu akademik nih! Otak encer banget! 💎",
-        "🔥 Hot banget prestasinya! AC ruangan sampai kewalahan! ❄️",
-        "⭐ Bintang lima! Michelin Guide mau kasih award akademik nih! 🏆",
-        "🎯 Perfect shot! Panah cupid akademik mengenai sasaran! 💘"
+    "🌟 Wow, you're a total genius! With this score, you could be a lecturer! 😎",
+    "🚀 Incredible! Your grade makes NASA want to recruit you! 🛸",
+    "👑 Academic royalty! Your brain is razor-sharp! 💎",
+    "🔥 Your achievement is on fire! Even the AC can't keep up! ❄️",
+    "⭐ Five-star! The Michelin Guide wants to give you an academic award! 🏆",
+    "🎯 Perfect shot! The academic cupid hit the bullseye! 💘"
     ],
     'B': [
-        "👍 Bagus banget! Kamu udah level mahasiswa yang rajin nih! 📚",
-        "💪 Solid! Nilaimu seperti tembok, kuat dan kokoh! 🧱",
-        "🎯 Good job! Target tercapai dengan apik! 🏹",
-        "🌈 Colorful! Prestasimu cerah seperti pelangi! 🎨",
-        "🚗 Cruise control! Stabil dan terkendali, mantap! 🛣️",
-        "🍎 Apple of my eye! Guru pasti bangga banget! 🍏"
+        "👍 Great job! You've reached the hardworking student level! 📚",
+        "💪 Solid! Your score is like a wall—strong and sturdy! 🧱",
+        "🎯 Good job! You hit your target nicely! 🏹",
+        "🌈 Colorful! Your achievement shines like a rainbow! 🎨",
+        "🚗 Cruise control! Smooth and steady—awesome! 🛣️",
+        "🍎 Apple of my eye! Your teacher must be super proud! 🍏"
     ],
     'C': [
-        "😊 Lumayan nih! Masih ada ruang untuk jadi superhero akademik! 🦸‍♂️",
-        "🌱 Seperti tanaman, masih terus tumbuh dan berkembang! 🌿",
-        "🎢 Naik turun itu wajar, yang penting terus maju! 🚂",
-        "🍕 Seperti pizza, masih enak meski belum perfect! 🧀",
-        "🐢 Slow but sure! Kura-kura juga bisa menang lho! 🏁",
-        "🌅 Sunrise moment! Besok pasti lebih cerah! ☀️"
+        "😊 Not bad! Still room to become an academic superhero! 🦸‍♂️",
+        "🌱 Like a plant, you're still growing and evolving! 🌿",
+        "🎢 Ups and downs are normal—what matters is moving forward! 🚂",
+        "🍕 Like pizza—still great even if not perfect! 🧀",
+        "🐢 Slow but sure! Even a turtle can win the race! 🏁",
+        "🌅 A sunrise moment! Tomorrow will be brighter! ☀️"
     ],
     'D': [
-        "💪 Jangan menyerah! Even Batman pernah jatuh sebelum terbang! 🦇",
-        "🌅 Ini baru sunrise, masih banyak kesempatan hari ini! ☀️",
-        "🚧 Under construction! Sedang dalam tahap perbaikan! 🔨",
-        "🎪 Life is a circus, sometimes you're the clown, sometimes the star! 🤹‍♂️",
+        "💪 Don’t give up! Even Batman fell before he flew! 🦇",
+        "🌅 This is just the sunrise—still a full day of chances ahead! ☀️",
+        "🚧 Under construction! Improvements in progress! 🔨",
+        "🎪 Life’s a circus—sometimes you're the clown, sometimes the star! 🤹‍♂️",
         "🍀 Bad luck today? Good luck tomorrow! Keep fighting! 💪",
-        "🔋 Battery low? Time to recharge and comeback stronger! ⚡"
+        "🔋 Battery low? Time to recharge and come back stronger! ⚡"
     ]
 }
 
