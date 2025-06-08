@@ -194,13 +194,18 @@ def get_grade_color(grade):
     colors = {'A': '#00ff00', 'B': '#ffff00', 'C': '#ff8c00', 'D': '#ff0000'}
     return colors.get(grade, '#gray')
 
-def create_gauge_chart(score, grade):
+def create_gauge_chart(score, grade, accuracy):
     fig = go.Figure(go.Indicator(
-        mode = "gauge+number+delta",
+        mode = "gauge+number",
         value = score,
         domain = {'x': [0, 1], 'y': [0, 1]},
-        title = {'text': f"Exam Score<br><span style='font-size:0.8em;color:{get_grade_color(grade)}'>Grade: {grade}</span>"},
-        delta = {'reference': 75},
+        title = {
+            'text': (
+                f"Exam Score<br>"
+                f"<span style='font-size:0.8em;color:{get_grade_color(grade)}'>Grade: {grade}</span><br>"
+                f"<span style='font-size:0.8em;color:#888'>Model Accuracy: {accuracy:.1f}%</span>"
+            )
+        },
         gauge = {
             'axis': {'range': [None, 100]},
             'bar': {'color': get_grade_color(grade)},
@@ -217,30 +222,6 @@ def create_gauge_chart(score, grade):
             }
         }
     ))
-    
-    fig.update_layout(height=300)
-    return fig
-
-def create_probability_chart(score, rmse):
-    # Gunakan RMSE model sebagai std_dev
-    std_dev = rmse
-    x = np.linspace(max(0, score-3*std_dev), min(100, score+3*std_dev), 200)
-    y = np.exp(-0.5 * ((x - score) / std_dev) ** 2)
-    y = y / np.sum(y) * 100  # Skala ke persen
-
-    fig = px.area(
-        x=x, y=y,
-        title="Prediction Confidence Distribution",
-        labels={'x': 'Possible Exam Scores', 'y': 'Relative Likelihood (%)'},
-        color_discrete_sequence=['lightblue']
-    )
-    fig.add_vline(x=score, line_dash="dash", line_color="red",
-                  annotation_text=f"Predicted: {score:.1f}")
-    fig.add_vrect(
-        x0=score-std_dev, x1=score+std_dev,
-        fillcolor="yellow", opacity=0.2,
-        annotation_text="68% Confidence", annotation_position="top left"
-    )
     fig.update_layout(height=300)
     return fig
 
@@ -255,7 +236,12 @@ def main():
     try:
         with st.spinner("Loading models and data..."):
             model, scaler, label_encoders, important_features, model_metrics = train_model()
-        
+            df = load_and_process_data()  # Load data for min/max
+
+        # Tampilkan model accuracy di bawah judul utama
+        accuracy = model_metrics['R2'] * 100
+        st.info(f"**Model Accuracy: {accuracy:.1f}%**")
+
         # Display model performance in expander
         with st.expander("📊 Model Performance Metrics"):
             col1, col2, col3, col4 = st.columns(4)
@@ -274,7 +260,7 @@ def main():
     
     # Sidebar for inputs
     st.sidebar.header("📝 Input Student Features")
-    st.sidebar.markdown("Enter student information for prediction:")
+    st.sidebar.markdown("Enter student information for prediction (only using top 60% of features):")
     
     # Create input fields based on important features
     input_values = {}
@@ -282,20 +268,24 @@ def main():
     # Numerical inputs
     st.sidebar.subheader("📊 Numerical Data")
     
-    # Define default values and ranges for numerical features
-    numerical_defaults = {
-        'Hours_Studied': (15, 0, 50, "Study Hours per Week"),
-        'Attendance': (85, 0, 100, "Attendance Rate (%)"),
-        'Sleep_Hours': (7, 3, 12, "Sleep Hours per Day"),
-        'Previous_Scores': (75, 0, 100, "Previous Scores"),
-        'Tutoring_Sessions': (2, 0, 10, "Tutoring Sessions per Month"),
-        'Physical_Activity': (5, 0, 20, "Physical Activity (hours/week)")
+    # Ambil min, max, dan median dari dataset untuk setiap fitur numerik
+    numerical_features = ['Hours_Studied', 'Attendance', 'Sleep_Hours', 'Previous_Scores',
+                         'Tutoring_Sessions', 'Physical_Activity']
+    numerical_labels = {
+        'Hours_Studied': "Study Hours per Week",
+        'Attendance': "Attendance Rate (%)",
+        'Sleep_Hours': "Sleep Hours per Day",
+        'Previous_Scores': "Previous Scores",
+        'Tutoring_Sessions': "Tutoring Sessions per Month",
+        'Physical_Activity': "Physical Activity (hours/week)"
     }
-    
     for feature in important_features:
-        if feature in numerical_defaults:
-            default, min_val, max_val, label = numerical_defaults[feature]
-            input_values[feature] = st.sidebar.slider(label, min_val, max_val, default)
+        if feature in numerical_features and feature in df.columns:
+            min_val = int(df[feature].min())
+            max_val = int(df[feature].max())
+            median_val = int(df[feature].median())
+            label = numerical_labels.get(feature, feature)
+            input_values[feature] = st.sidebar.slider(label, min_val, max_val, median_val)
     
     # Categorical inputs
     st.sidebar.subheader("📋 Categorical Data")
@@ -404,13 +394,11 @@ def main():
         st.subheader("📈 Result Visualization")
         
         if hasattr(st.session_state, 'predicted_score'):
+            # Hitung akurasi model (R2 * 100)
+            accuracy = model_metrics['R2'] * 100
             # Gauge chart
-            gauge_fig = create_gauge_chart(st.session_state.predicted_score, st.session_state.grade)
+            gauge_fig = create_gauge_chart(st.session_state.predicted_score, st.session_state.grade, accuracy)
             st.plotly_chart(gauge_fig, use_container_width=True)
-            
-            # Probability chart
-            prob_fig = create_probability_chart(st.session_state.predicted_score, model_metrics['RMSE'])
-            st.plotly_chart(prob_fig, use_container_width=True)
         else:
             st.info("Click the 'Predict Now!' button to see the visualization of the results")
     
@@ -442,14 +430,41 @@ def main():
     
     # Display important features
     st.markdown("---")
-    st.subheader("🔍 Important Features for Prediction")
-    st.write("The following features were selected based on Feature Selection (SelectKBest):")
-    
-    # Create columns for features
-    feature_cols = st.columns(3)
-    for i, feature in enumerate(important_features):
-        with feature_cols[i % 3]:
-            st.write(f"• {feature.replace('_', ' ').title()}")
+    st.subheader("🔍 Feature Importance (F-regression)")
+
+    # Ambil ulang skor feature importance dari SelectKBest
+    df_encoded = df.copy()
+    categorical_features = ['Parental_Involvement', 'Access_to_Resources', 'Extracurricular_Activities',
+                           'Motivation_Level', 'Internet_Access', 'Family_Income', 'Teacher_Quality',
+                           'School_Type', 'Peer_Influence', 'Learning_Disabilities',
+                           'Parental_Education_Level', 'Distance_from_Home', 'Gender']
+    for feature in categorical_features:
+        if feature in df_encoded.columns:
+            le = LabelEncoder()
+            df_encoded[feature] = le.fit_transform(df_encoded[feature])
+
+    X_temp = df_encoded.drop('Exam_Score', axis=1)
+    y_temp = df_encoded['Exam_Score']
+
+    selector = SelectKBest(score_func=f_regression, k='all')
+    selector.fit(X_temp, y_temp)
+
+    feature_scores = pd.DataFrame({
+        'Feature': X_temp.columns,
+        'Score': selector.scores_
+    }).sort_values('Score', ascending=True)  # ascending for horizontal bar
+
+    # Plot bar chart
+    fig = px.bar(
+        feature_scores,
+        x='Score',
+        y='Feature',
+        orientation='h',
+        title="Feature Importance Scores (F-regression)",
+        labels={'Score': 'F-score', 'Feature': 'Feature'},
+        height=500
+    )
+    st.plotly_chart(fig, use_container_width=True)
 
 if __name__ == "__main__":
     main()
