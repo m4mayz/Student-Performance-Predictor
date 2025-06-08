@@ -221,26 +221,26 @@ def create_gauge_chart(score, grade):
     fig.update_layout(height=300)
     return fig
 
-def create_probability_chart(score):
-    # Simulate confidence interval around prediction
-    std_dev = 5  # Standard deviation for prediction uncertainty
-    x = np.linspace(max(0, score-20), min(100, score+20), 100)
+def create_probability_chart(score, rmse):
+    # Gunakan RMSE model sebagai std_dev
+    std_dev = rmse
+    x = np.linspace(max(0, score-3*std_dev), min(100, score+3*std_dev), 200)
     y = np.exp(-0.5 * ((x - score) / std_dev) ** 2)
-    y = y / np.sum(y) * 100  # Convert to percentage
-    
-    fig = px.area(x=x, y=y, 
-                  title="Prediction Confidence Distribution",
-                  labels={'x': 'Possible Exam Scores', 'y': 'Probability (%)'},
-                  color_discrete_sequence=['lightblue'])
-    
-    fig.add_vline(x=score, line_dash="dash", line_color="red", 
+    y = y / np.sum(y) * 100  # Skala ke persen
+
+    fig = px.area(
+        x=x, y=y,
+        title="Prediction Confidence Distribution",
+        labels={'x': 'Possible Exam Scores', 'y': 'Relative Likelihood (%)'},
+        color_discrete_sequence=['lightblue']
+    )
+    fig.add_vline(x=score, line_dash="dash", line_color="red",
                   annotation_text=f"Predicted: {score:.1f}")
-    
-    # Add confidence intervals
-    fig.add_vrect(x0=score-std_dev, x1=score+std_dev, 
-                  fillcolor="yellow", opacity=0.2,
-                  annotation_text="68% Confidence", annotation_position="top left")
-    
+    fig.add_vrect(
+        x0=score-std_dev, x1=score+std_dev,
+        fillcolor="yellow", opacity=0.2,
+        annotation_text="68% Confidence", annotation_position="top left"
+    )
     fig.update_layout(height=300)
     return fig
 
@@ -409,7 +409,7 @@ def main():
             st.plotly_chart(gauge_fig, use_container_width=True)
             
             # Probability chart
-            prob_fig = create_probability_chart(st.session_state.predicted_score)
+            prob_fig = create_probability_chart(st.session_state.predicted_score, model_metrics['RMSE'])
             st.plotly_chart(prob_fig, use_container_width=True)
         else:
             st.info("Click the 'Predict Now!' button to see the visualization of the results")
