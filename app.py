@@ -394,33 +394,12 @@ def main():
             
             # Display fun message
             fun_message = random.choice(grade_messages[grade])
-            st.markdown(f"### Message: {fun_message}")
-            
-            # Calculate prediction probabilities for each grade
-            grade_probs = {
-                'A': max(0, min(100, 100 * (1 / (1 + np.exp(-0.1 * (predicted_score - 85)))))),
-                'B': max(0, min(100, 100 * (1 / (1 + np.exp(-0.2 * (predicted_score - 75)))) - 
-                         100 * (1 / (1 + np.exp(-0.1 * (predicted_score - 85)))))),
-                'C': max(0, min(100, 100 * (1 / (1 + np.exp(-0.2 * (predicted_score - 55)))) - 
-                         100 * (1 / (1 + np.exp(-0.2 * (predicted_score - 75)))))),
-                'D': max(0, min(100, 100 - 100 * (1 / (1 + np.exp(-0.2 * (predicted_score - 55))))))
-            }
-            
-            # Normalize probabilities
-            total_prob = sum(grade_probs.values())
-            if total_prob > 0:
-                grade_probs = {k: v/total_prob*100 for k, v in grade_probs.items()}
-            
-            # Display prediction probabilities
-            st.subheader("📊 Prediction Probabilities")
-            for grade_key, prob in grade_probs.items():
-                st.write(f"**Grade {grade_key}:** {prob:.1f}%")
+            st.markdown(f"### 🎉 {fun_message}")
             
             # Store results in session state for visualization
             st.session_state.predicted_score = predicted_score
             st.session_state.grade = grade
-            st.session_state.grade_probs = grade_probs
-    
+
     with col2:
         st.subheader("📈 Result Visualization")
         
@@ -432,21 +411,6 @@ def main():
             # Probability chart
             prob_fig = create_probability_chart(st.session_state.predicted_score)
             st.plotly_chart(prob_fig, use_container_width=True)
-            
-            # Grade probabilities bar chart
-            if hasattr(st.session_state, 'grade_probs'):
-                grades = list(st.session_state.grade_probs.keys())
-                probs = list(st.session_state.grade_probs.values())
-                colors = [get_grade_color(g) for g in grades]
-                
-                fig_bar = go.Figure(data=[go.Bar(x=grades, y=probs, marker_color=colors)])
-                fig_bar.update_layout(
-                    title="Grade Prediction Probabilities",
-                    xaxis_title="Grade",
-                    yaxis_title="Probability (%)",
-                    height=300
-                )
-                st.plotly_chart(fig_bar, use_container_width=True)
         else:
             st.info("Click the 'Predict Now!' button to see the visualization of the results")
     
