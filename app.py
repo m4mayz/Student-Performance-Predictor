@@ -54,6 +54,9 @@ grade_messages = {
         "Life’s a circus—sometimes you're the clown, sometimes the star!",
         "Bad luck today? Good luck tomorrow! Keep fighting!",
         "Battery low? Time to recharge and come back stronger!"
+    ],
+    'E': [
+        "No excuses, you're very stupid"
     ]
 }
 
@@ -141,9 +144,8 @@ def train_model():
         'Score': selector.scores_
     }).sort_values('Score', ascending=False)
 
-    # Select top features (top 60% of features)
-    n_features_to_keep = int(len(feature_scores) * 0.6)
-    important_features = feature_scores.head(n_features_to_keep)['Feature'].tolist()
+    # Select features with score > 10
+    important_features = feature_scores[feature_scores['Score'] > 10]['Feature'].tolist()
 
     # Create cleaned dataset
     df_cleaned = df_encoded[important_features + ['Exam_Score']].copy()
@@ -181,14 +183,16 @@ def train_model():
     return model, scaler, label_encoders, important_features, model_metrics
 
 def assign_grade(score):
-    if score >= 85:
+    if score >= 80:
         return 'A'
-    elif score >= 75:
+    elif score >= 70:
         return 'B'
-    elif score >= 55:
+    elif score >= 60:
         return 'C'
-    else:
+    elif score >= 50:
         return 'D'
+    else:
+        return 'E'
 
 def get_grade_color(grade):
     colors = {'A': '#00ff00', 'B': '#ffff00', 'C': '#ff8c00', 'D': '#ff0000'}
@@ -203,7 +207,6 @@ def create_gauge_chart(score, grade, accuracy):
             'text': (
                 f"Exam Score<br>"
                 f"<span style='font-size:0.8em;color:{get_grade_color(grade)}'>Grade: {grade}</span><br>"
-                f"<span style='font-size:0.8em;color:#888'>Model Accuracy: {accuracy:.1f}%</span>"
             )
         },
         gauge = {
@@ -260,7 +263,7 @@ def main():
     
     # Sidebar for inputs
     st.sidebar.header("📝 Input Student Features")
-    st.sidebar.markdown("Enter student information for prediction (only using top 60% of features):")
+    st.sidebar.markdown("Enter student information for prediction (only using features with score > 10):")
     
     # Create input fields based on important features
     input_values = {}
@@ -406,27 +409,32 @@ def main():
     st.markdown("---")
     st.subheader("📚 Assessment System Information")
     
-    col1, col2, col3, col4 = st.columns(4)
+    col1, col2, col3, col4, col5 = st.columns(5)
     
     with col1:
         st.markdown("**Grade A** 🌟")
-        st.markdown("85-100 poin")
+        st.markdown("80-100 poin")
         st.markdown("Excellent")
     
     with col2:
         st.markdown("**Grade B** 👍")
-        st.markdown("75-84 poin")
+        st.markdown("70-79 poin")
         st.markdown("Good")
     
     with col3:
         st.markdown("**Grade C** 😊")
-        st.markdown("55-74 poin")
+        st.markdown("60-69 poin")
         st.markdown("Average")
     
     with col4:
         st.markdown("**Grade D** 💪")
-        st.markdown("0-54 poin")
+        st.markdown("50-59 poin")
         st.markdown("Needs Improvement")
+        
+    with col5:
+        st.markdown("**Grade E** ❌")
+        st.markdown("0-49 poin")
+        st.markdown("Poor Performance")
     
     # Display important features
     st.markdown("---")
